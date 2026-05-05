@@ -38,12 +38,16 @@ st.markdown(
 # =========================================================
 @st.cache_data
 def load_data():
+    import gzip
+    import io
     # Accepte aussi bien le .gz compressé que le .geojson brut
     file_gz   = DATA_DIR / "solar_facettes_pv_clean.geojson.gz"
     file_json = DATA_DIR / "solar_facettes_pv_clean.geojson"
 
     if file_gz.exists():
-        gdf = gpd.read_file(file_gz)
+        with gzip.open(file_gz, "rb") as f:
+            content = f.read()
+        gdf = gpd.read_file(io.BytesIO(content))
     elif file_json.exists():
         gdf = gpd.read_file(file_json)
     else:
